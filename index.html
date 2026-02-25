@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <title>Finanças & Agenda</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <link rel="stylesheet" href="style.css">
+  
+  <link rel="manifest" href="manifest.json">
+  <link rel="icon" type="image/png" href="icon-192.png"> 
+  <meta name="theme-color" content="#4b0082">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.28/jspdf.plugin.autotable.min.js"></script>
+  
+  <script src="https://www.gstatic.com/firebasejs/10.10.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.10.0/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.10.0/firebase-firestore-compat.js"></script>
+</head>
+
+<body>
+
+<div id="lock" class="lock" style="background: #0f0f14; display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh;">
+  <div style="text-align:center; padding: 20px; max-width: 300px;">
+    <div style="font-size: 60px; margin-bottom: 20px;">🔐</div>
+    <h2 style="color:white; margin-bottom: 10px;">Acesso Restrito</h2>
+    <p style="color: #888; margin-bottom: 20px; font-size: 14px;">Faça login para sincronizar</p>
+    
+    <input type="email" id="loginEmail" placeholder="E-mail" style="width: 100%; padding: 15px; border-radius: 12px; border: 1px solid #444; background: #222; color: white; margin-bottom: 10px;">
+    <input type="password" id="loginSenha" placeholder="Senha" style="width: 100%; padding: 15px; border-radius: 12px; border: 1px solid #444; background: #222; color: white; margin-bottom: 20px;">
+    
+    <button onclick="fazerLoginFirebase()" id="btnEntrar" style="width: 100%; background:#7b2ff7; color: white; border: none; padding: 15px; border-radius: 12px; font-weight: bold; margin-bottom: 15px; cursor: pointer;">
+      ENTRAR
+    </button>
+    
+    <button onclick="acaoBotaoBiometria()" id="btnBiometria" style="width: 100%; background: rgba(255,255,255,0.1); color: white; border: 1px solid rgba(255,255,255,0.2); padding: 15px; border-radius: 12px; font-weight: bold; cursor: pointer; display: none;">
+      USAR BIOMETRIA
+    </button>
+  </div>
+</div>
+
+<div id="mainContainer" style="display:none">
+
+    <div id="tabCaixinhas" class="tab-content active">
+        <div class="topo">
+            <div class="perfil">
+                <img id="fotoPerfil" src="https://via.placeholder.com/50" alt="Perfil">
+                <input type="file" id="uploadFoto" accept="image/*" hidden>
+                <div>
+                    <h3 id="saudacao">Olá, Economista 👋</h3>
+                    <div class="global-info">💰 Total Guardado: <span id="totalGlobal">R$ 0,00</span></div>
+                </div>
+            </div>
+            <button onclick="logout()" class="btn-logout">Sair</button>
+        </div>
+
+        <div class="nova nao-imprimir">
+            <input id="nome" placeholder="Nome do objetivo (ex: Viagem)">
+            <input id="valor" type="number" placeholder="Valor total (ex: 1000)">
+            <button onclick="criarCaixa()">➕ Criar Caixinha</button>
+        </div>
+
+        <div id="lista" class="lista"></div>
+    </div>
+
+    <div id="tabAgenda" class="tab-content" style="display:none">
+        <div class="topo">
+            <div class="perfil">
+                <div>
+                    <h3>📅 Agenda & Notas</h3>
+                </div>
+            </div>
+            <button onclick="logout()" class="btn-logout">Sair</button>
+        </div>
+
+        <div class="sub-nav">
+            <button id="subTabCompromissos" class="sub-btn active" onclick="mudarSubAba('compromissos')">📆 Compromissos</button>
+            <button id="subTabNotas" class="sub-btn" onclick="mudarSubAba('notas')">📝 Notas</button>
+        </div>
+
+        <div id="viewCompromissos" class="view-agenda">
+            <div id="listaCompromissos" class="lista-agenda"></div>
+            <button class="fab" onclick="abrirModalAgenda()">+</button>
+        </div>
+
+        <div id="viewNotas" class="view-agenda" style="display:none">
+            <div id="listaNotas" class="lista-agenda"></div>
+            <button class="fab" onclick="abrirModalNota()">+</button>
+        </div>
+    </div>
+
+    <div class="bottom-nav nao-imprimir">
+        <button class="nav-btn active" onclick="mudarAbaPrincipal('tabCaixinhas', this)">📦 Caixinhas</button>
+        <button class="nav-btn" onclick="mudarAbaPrincipal('tabAgenda', this)">📅 Agenda</button>
+    </div>
+
+</div>
+
+<div id="confete" class="confete"><div><h1>🎆 PARABÉNS! 🎆</h1><p>Meta atingida!</p></div></div>
+
+<div id="modalAgenda" class="modal-overlay" style="display:none">
+    <div class="modal-card">
+        <h3>Novo Compromisso</h3>
+        <input id="agendaTitulo" placeholder="Título (ex: Médico)">
+        <div style="display:flex; gap:10px; margin-top:10px;">
+            <input id="agendaData" type="date" style="width: 100%;">
+            <input id="agendaHora" type="time" style="width: 100%;">
+        </div>
+        <select id="agendaDono" style="width: 100%; margin-top: 10px; padding: 10px; border-radius: 8px; background: #222; color: white; border: 1px solid #444;">
+            <option value="Ambos">De quem é? (Ambos)</option>
+            <option value="Leonardo">Leonardo</option>
+            <option value="Vitórya">Vitórya</option>
+        </select>
+        <div style="display:flex; gap:10px; margin-top:15px">
+            <button onclick="fecharModais()" class="btn-cancelar">Cancelar</button>
+            <button onclick="addAgenda()" class="btn-salvar">Agendar</button>
+        </div>
+    </div>
+</div>
+
+<div id="modalNota" class="modal-overlay" style="display:none">
+    <div class="modal-card">
+        <h3>Nova Nota</h3>
+        <textarea id="notaTexto" rows="4" placeholder="Escreva aqui..." style="width:100%; border-radius:8px; padding:10px; background:#333; color:white; border:none"></textarea>
+        <div style="display:flex; gap:10px; margin-top:15px">
+            <button onclick="fecharModais()" class="btn-cancelar">Cancelar</button>
+            <button onclick="addNota()" class="btn-salvar">Salvar</button>
+        </div>
+    </div>
+</div>
+
+<script src="app.js"></script>
+<script>
+    if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.register('./service-worker.js')
+        .then(() => console.log('App Instalável Ativo!'))
+        .catch(err => console.error('Erro PWA:', err));
+    }
+</script>
+
+</body>
+</html>

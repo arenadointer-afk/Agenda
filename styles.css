@@ -1,0 +1,94 @@
+body {
+    margin: 0; font-family: 'Segoe UI', sans-serif;
+    background: #0f0f14; color: white; padding-bottom: 80px;
+}
+
+/* LOCK & UI GERAL */
+.lock {
+    height: 100vh; display: flex; flex-direction: column; justify-content: center; align-items: center;
+    background: linear-gradient(135deg, #4b0082, #7b2ff7); position: fixed; z-index: 9999; top: 0; width: 100%;
+}
+.lock input {
+    padding: 15px; border-radius: 30px; border: none; text-align: center; font-size: 24px; letter-spacing: 5px; width: 150px; outline: none; margin: 15px 0;
+}
+.lock button {
+    padding: 12px 30px; border-radius: 30px; border: none; background: white; color: #4b0082; font-weight: bold; cursor: pointer;
+}
+
+/* TOPO */
+.topo {
+    background: #1c1c26; padding: 15px; position: sticky; top: 0; z-index: 100;
+    display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #333;
+}
+.perfil { display: flex; align-items: center; gap: 10px; }
+.perfil img { width: 45px; height: 45px; border-radius: 50%; object-fit: cover; border: 2px solid #7b2ff7; }
+.btn-logout { background: #ef5350; border: none; color: white; padding: 5px 10px; border-radius: 5px; cursor: pointer; font-size: 12px; }
+
+/* CAIXINHAS (Estilo Existente) */
+.nova { padding: 15px; background: #222; margin: 10px; border-radius: 10px; display: flex; flex-direction: column; gap: 10px; }
+.nova input { padding: 10px; border-radius: 5px; border: none; background: #333; color: white; }
+.nova button { padding: 10px; border-radius: 5px; border: none; background: #7b2ff7; color: white; font-weight: bold; cursor: pointer; }
+
+.caixa {
+    background: #1c1c26; margin: 10px 15px; padding: 15px; border-radius: 12px; border-left: 4px solid #7b2ff7;
+    transition: transform 0.2s; cursor: pointer;
+}
+.caixa:active { transform: scale(0.98); }
+.barra-fundo { background: #333; height: 8px; border-radius: 4px; margin: 10px 0; overflow: hidden; }
+.barra-nivel { background: linear-gradient(90deg, #7b2ff7, #00e676); height: 100%; transition: width 0.5s; }
+.valores { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-top: 15px; }
+.valor {
+    background: #333; padding: 10px; border-radius: 8px; text-align: center; font-size: 14px; cursor: pointer; border: 1px solid #444;
+}
+.valor.marcado { background: #00e676; color: #000; font-weight: bold; border-color: #00e676; }
+
+/* AGENDA & NOTAS (Novo Estilo) */
+.acoes-agenda button, .acoes-agenda label {
+    background: none; border: none; font-size: 20px; color: #ccc; cursor: pointer; margin-right: 10px;
+}
+.sub-nav { display: flex; background: #222; margin: 10px 15px; border-radius: 8px; overflow: hidden; }
+.sub-btn {
+    flex: 1; padding: 10px; border: none; background: transparent; color: #888; cursor: pointer; font-weight: bold;
+}
+.sub-btn.active { background: #7b2ff7; color: white; }
+
+.lista-agenda { padding: 10px 15px; }
+.mes-header { color: #b388ff; font-size: 12px; font-weight: bold; text-transform: uppercase; margin: 15px 0 5px 0; }
+
+.card-agenda {
+    background: #1c1c26; padding: 15px; border-radius: 10px; margin-bottom: 8px; display: flex; justify-content: space-between; align-items: center; border-left: 4px solid #ff9800;
+}
+.card-nota {
+    background: #2a2a35; padding: 15px; border-radius: 10px; margin-bottom: 8px; display: flex; gap: 10px; align-items: flex-start;
+}
+.card-nota.feito { opacity: 0.5; }
+.card-nota.feito .nota-texto { text-decoration: line-through; }
+.check-btn {
+    min-width: 20px; height: 20px; border: 2px solid #7b2ff7; border-radius: 50%; background: transparent; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 12px;
+}
+.card-nota.feito .check-btn { background: #7b2ff7; color: black; }
+
+/* MODAIS & FAB */
+.modal-overlay {
+    position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8);
+    display: flex; justify-content: center; align-items: center; z-index: 2000;
+}
+.modal-card { background: #222; padding: 20px; border-radius: 15px; width: 85%; max-width: 350px; }
+.modal-card input { width: 100%; padding: 10px; margin: 8px 0; background: #333; border: none; color: white; border-radius: 5px; box-sizing: border-box; }
+.btn-salvar { flex: 1; padding: 10px; border: none; background: #00e676; color: black; font-weight: bold; border-radius: 5px; cursor: pointer; }
+.btn-cancelar { flex: 1; padding: 10px; border: none; background: #ef5350; color: white; font-weight: bold; border-radius: 5px; cursor: pointer; }
+
+.fab {
+    position: fixed; bottom: 80px; right: 20px; width: 55px; height: 55px; border-radius: 50%;
+    background: #7b2ff7; color: white; border: none; font-size: 30px; box-shadow: 0 4px 10px rgba(0,0,0,0.5); cursor: pointer; z-index: 500;
+}
+
+/* NAV INFERIOR */
+.bottom-nav {
+    position: fixed; bottom: 0; width: 100%; background: #111; display: flex; border-top: 1px solid #333; z-index: 1000;
+}
+.nav-btn {
+    flex: 1; padding: 15px; background: transparent; border: none; color: #666; font-size: 14px; cursor: pointer;
+}
+.nav-btn.active { color: #7b2ff7; border-top: 3px solid #7b2ff7; font-weight: bold; background: #1a1a20; }
+.confete { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 3000; justify-content: center; align-items: center; text-align: center; }
